@@ -1,0 +1,325 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<title>动力金融网-CFCA认证的互联网金融公司</title>
+<script type="text/javascript" th:src="@{/js/jquery-1.7.2.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/trafficStatistics.js}"></script>
+<link rel="stylesheet" type="text/css" th:href="@{/css/style.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/share.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/main.css}" />
+
+</head>
+
+<body>
+<div id="header">
+<!--<jsp:include page="commons/header.jsp"/>-->
+    <div th:include="commons/header :: html"></div>
+</div>
+
+<!--散标投资 begin-->
+<div id="sbtz" class="invest-details">
+
+<!--页中begin-->
+<div class="mainBox pro-details-body">
+  <div class="homeWap clearfix" id="huacengPar">
+    <div class="pro-details-left">
+      
+      <!-- 产品详情start -->
+      <div class="pro-info-details">
+        <div class="pro-name">
+          <h2><span th:text="|${loanInfo.productName} (${loanInfo.productNo}期)|">季度宝 (20170726期)</span></h2>
+        </div>
+        <div class="pro-info">
+          <ul class="clearfix">
+            <li class="info-1">
+              <p>历史年化利率</p>
+              <h3 th:text="|${loanInfo.rate}%|">4.9%</h3>
+              <div class="info-bt">
+              <span>本产品采用普通利率</span>
+              </div>
+            </li>
+            <li class="info-2">
+              <p>募集金额(元)</p>
+              <h3 th:text="${loanInfo.productMoney}">500000.0</h3>
+              <div class="info-bt">
+              	<span>
+                    <span th:if="${loanInfo.leftProductMoney}<=0">
+                         已满标
+                    </span>
+                    <span th:if="${loanInfo.leftProductMoney}>0">
+                        <span th:text="|募集中,剩余募集金额 ${loanInfo.leftProductMoney}元|">
+                            募集中,剩余募集金额 500000.0元
+                        </span>
+                    </span>
+              		<!-- 只有状态为0时为募集，其它都为已满标 -->
+              		<!--募集中,剩余募集金额 500000.0元-->
+              		<!-- 已满标 -->
+              	</span>
+              </div>
+            </li>
+            <li class="info-3">
+              <p>投资周期</p>
+              <!-- 只有新手宝产品周期为天 -->
+              <h3>
+                  <span th:if="${loanInfo.productName=='新手宝'}" th:text="|${loanInfo.cycle}天|">6个月</span>
+                  <span th:if="${loanInfo.productName!='新手宝'}" th:text="|${loanInfo.cycle}月|">6个月</span>
+              </h3>
+              <div class="info-bt"><span></span></div>
+            </li>
+          </ul>
+        </div>
+        <dl class="pro-syfs">
+          <dt><span>收益获取方式</span></dt>
+          <dd><span>收益返还：</span>到期还本付息</dd>
+        </dl>
+      </div>
+      <!-- 产品详情end -->
+      
+      <!-- 投资记录start -->
+      <div class="pro-details-cnt">
+        <ul class="tabNav clearfix">
+          <li><a id="one3" href="javascript:void(0);" class="s">投资记录</a></li>
+        </ul>
+        
+        <div class="invest-record" id="con_one_3" style="display:block">
+        <div class="vertical-side">投资列表</div>
+		<dl class="record-list">
+		<dt>
+			<span class="record-num">序号</span><span class="invest-user">投资人</span><span class="invest-money">投资金额(元)</span><span class="invest-time">投资时间</span>
+		</dt>
+		
+			<!-- 如果投资记录为空，显示以下文字 -->
+			<dd style="text-align:center;" th:if="${#lists.isEmpty(bidInfoList)}">该产品暂时还没有人投资，赶快去投资吧~</dd>
+			
+		<!-- 如果有投资记录，循环遍历显示 -->
+          <!--AJAX进行分页-->
+
+		<!--<dd th:if="${!#lists.isEmpty(bidInfoList)}" th:each="bidInfo:${bidInfoList}">
+			<span class="record-num" th:text="${bidInfoStat.count}">1</span>
+          &lt;!&ndash;todo:在前端维护一个数组，里面装100个手机号，随机抽取一个放在这里&ndash;&gt;
+			<span class="invest-user" th:text="${#strings.substring(bidInfo.user.phone,0,3)+'*****'+#strings.substring(bidInfo.user.phone,8)}">137******89</span>
+			<span class="invest-money" th:text="${bidInfo.bidMoney}">1000.0</span>
+			<span class="invest-time" th:text="${#dates.format(bidInfo.bidTime,'yyyy-MM-dd HH:mm:ss')}">2017-09-12 13:34:22</span>
+        </dd>-->
+          <script type="text/javascript" th:inline="javascript">
+              function func(page){
+                  if(page<1){
+                      page=1;
+                  }
+                  var data={"cunPage":page, "loanId":[[${loanId}]]};
+                  $.get("/005-money-web/loan/bidInfoList",data,function(data1){
+                      $("#getResponseId").html(data1);
+                  });
+              }
+          </script>
+          <div th:if="${!#lists.isEmpty(bidInfoList)}" th:fragment="get-response" th:id="getResponseId">
+            <dd  th:each="bidInfo:${bidInfoList}">
+            <span class="record-num" th:text="${bidInfoStat.count}">1</span>
+            <span class="invest-user"  th:text="${#strings.substring(bidInfo.user.phone,0,3)+'*****'+#strings.substring(bidInfo.user.phone,8)}">137******89</span>
+            <span class="invest-money" th:text="${bidInfo.bidMoney}">1000.0</span>
+            <span class="invest-time" th:text="${#dates.format(bidInfo.bidTime,'yyyy-MM-dd HH:mm:ss')}">2017-09-12 13:34:22</span>
+          </dd>
+            <dt>
+              <span th:text="|共${#session.getAttribute('pageModel1').totalCount}条${#session.getAttribute('pageModel1').totalPage}页　当前为第${#session.getAttribute('pageModel1').cunPage}页|">共条3页　当前为第2页</span>　
+              <a id="linkHomePage" href="javascript:func(1)">首页</a>
+              <a id="linkPreviousPage" th:onclick="'func('+${#session.getAttribute('pageModel1').cunPage-1}+')'">上一页</a>
+              <a id="linkNextPage" th:onclick="'func('+${#session.getAttribute('pageModel1').cunPage+1}+')'">下一页 </a>
+              <a id="linkLastPage" th:totalPage="${#session.getAttribute('pageModel1').totalPage}" th:onclick="func(this.getAttribute('totalPage'))">尾页</a>
+            </dt>
+         <!-- <dd >
+            <span class="record-num" th:text="${bidInfoStat.count}">1</span>
+            <span class="invest-user"  th:text="${#strings.substring(bidInfo.user.phone,0,3)+'*****'+#strings.substring(bidInfo.user.phone,8)}">137******89</span>
+            <span class="invest-money" th:text="${bidInfo.bidMoney}">1000.0</span>
+            <span class="invest-time" th:text="${#dates.format(bidInfo.bidTime,'yyyy-MM-dd HH:mm:ss')}">2017-09-12 13:34:22</span>
+          </dd>-->
+          </div>
+		</dl>
+		</div>
+      </div>
+      <!-- 投资记录end -->
+    </div>
+    
+    <!--页面右侧begin-->
+    <div class="pro-details-right">
+
+      <div class="right-calculator" id="huaceng">
+        <div class="calculator-cnt">
+          <h2>立即投资</h2>
+          <dl class="profits-mode">
+            <dt>收益获取方式</dt>
+            <dd class="clearfix"><span id="fanhuan"><em>到期还本付息</em></span></dd>
+          </dl>
+          <dl class="usable">
+            <dt>我的账户可用</dt>
+            <dd>资金(元)：
+            <!--没登录显示登录链接，登录显示余额，大于10000显示“****”-->
+	            	<!-- 判断用户是否登录：未登录，显示登录连接 -->
+                <input type="hidden" id="money">
+	            	<span style="font-size:18px;color:#ff6161;vertical-align:bottom;" th:if="${#session.getAttribute('loginUser')==null}">
+                      <a th:href="@{/loan/page/login}">请登录</a>
+                    </span>
+	        
+	            	<!-- 判断用户是否登录：已登录，显示可用余额 -->
+              <span style="font-size:18px;color:#ff6161;vertical-align:bottom;"  th:if="${#session.getAttribute('loginUser')!=null}">
+                <span onclick="change()" id="user_money">1,000,12 </span>元
+              </span>
+	        
+            </dd>
+          </dl>
+          <div class="expect-box">
+            <div class="expect-money">预计本息收入(元)：<span id="shouyi" class="money"></span><span class="prompt" style="display:block;">请在下方输入投资金额</span></div>
+            <input type="text" id="bidMoney" name="bidMoney" onblur="checkMoney();" placeholder="请输入投资金额，应为100元的整倍数" maxlength="9"/>
+            <div class="max-invest-money" id="max-invest-money"></div>
+          </div>
+          <div class="invest-btn">
+          	<a id="investNow" href="javascript:void(0)" class="btn-1" onclick="invest();">立即投资</a>
+          </div>
+          <input type="hidden" id="loanId" name="loanId" value="${loanInfo.id}"/>
+        </div>
+      </div>
+    </div>
+    <!--页面右侧end-->
+  </div>
+</div>
+<!--页中end-->
+
+</div>
+<!--散标投资 end-->
+
+<!--遮罩层-->
+<div class="dialog-overlay" id="dialog-overlay1" style="display:none;"></div>
+
+<!--投资成功浮层start-->
+<div class="layer-body failureSuccess failurePayment" id="failurePayment" style="display:none;width:500px;height:100px;top:75%;">
+  <a class="layer-close" href="javascript:closeit();"></a>
+  <div style="background:#f2f2f2; line-height:105px;text-align:center;"><font style="font-size:25px;">投资成功</font></div>
+</div>
+<!--投资成功浮层end-->
+
+<!--页脚start-->
+<jsp:include page="commons/footer.jsp"/>
+<!--页脚end-->
+
+<script type="text/javascript">
+function closeit() {
+	$("#failurePayment").hide();
+	$("#dialog-overlay1").hide();
+	window.location.href=rootPath+"/loan/page/myCenter";
+}
+
+
+</script>
+
+<script th:inline="javascript">
+    var loanId=[[${loanInfo.id}]];
+    var ptype=[[${loanInfo.productType}]];
+    var rate=[[${loanInfo.rate}]];
+    var cycle=[[${loanInfo.cycle}]];
+    var bidMinLimit=[[${loanInfo.bidMinLimit}]];
+    var bidMaxLimit=[[${loanInfo.bidMaxLimit}]];
+    var leftProductMoney=[[${loanInfo.leftProductMoney}]];
+    function checkMoney(){
+    var bidMoney=$.trim($("#bidMoney").val());
+    //非空
+    if(bidMoney==null || bidMoney===""){
+        $("#max-invest-money").html("请输入金额");
+        return;
+    }
+    //大于0
+    if(window.parseInt(bidMoney)<=0){
+        $("#max-invest-money").html("输入的金额不能小于0");
+        return;
+    }
+    //必须是数字
+    if(!/^[0-9]*$/.test(bidMoney)){
+        $("#max-invest-money").html("请输入正确的金额");
+        return;
+    }
+    //100的整数倍
+    if(window.parseInt(bidMoney)%100>0){
+        $("#max-invest-money").html("输入的金额必须是100的整数倍");
+        return;
+    }
+    $("#max-invest-money").html("");
+    //计算收益：利率/100/365*本金*周期
+    var shouyi=0;
+    if(ptype===0){
+        shouyi=rate/100/365*bidMoney*cycle;
+    }else{
+        shouyi=rate/100/365*bidMoney*cycle*30;
+    }
+    $("#shouyi").html(shouyi.toFixed(2));
+    return true;
+    }
+
+    function showMoney(){
+        $.get(rootPath+"/loan/page/queryFinance",function(data) {
+            if (data.code === 0) {
+                return;
+            }
+            if (data.code === 1) {
+                $("#money").val(data.message);
+                if (parseInt(data.message) >= 10000) {
+                    $("#user_money").html("*****");
+                }
+                if (parseInt(data.message) >= 0 && parseInt(data.message) < 10000) {
+                    $("#user_money").html(data.message);
+                }
+            }
+        });
+    }
+
+    showMoney();
+
+    function change() {
+        var user_money = $("#user_money").html();
+        if($("#money").val()>=10000) {
+            if (user_money === "*****") {
+                $("#user_money").html($("#money").val());
+            }
+            if (user_money !== "*****") {
+                $("#user_money").html("*****");
+            }
+        }
+    }
+
+    function invest(){
+    if(checkMoney()) {
+        var bidMoney = $.trim($("#bidMoney").val());
+        //判断是否登录，是否实名认证
+        if([[${#session?.getAttribute("loginUser")}]]==null){
+            window.location.href=rootPath+"/loan/page/login?ReturnUrl="+window.location.href;
+            return;
+        }
+        if( [[${#session?.getAttribute("loginUser")?.idCard}]]==null){
+            window.location.href=rootPath+"/loan/page/realName?ReturnUrl="+window.location.href;
+            return;
+        }
+
+        //业务验证
+        if (parseInt(bidMoney) < bidMinLimit || parseInt(bidMoney) > bidMaxLimit) {
+            $("#max-invest-money").html("您输入的金额必须在" + bidMinLimit + "--" + bidMaxLimit + "之间");
+            return;
+        }
+        if (parseInt(bidMoney) > leftProductMoney) {
+            $("#max-invest-money").html("您输入的金额必须在" + bidMinLimit + "--" + leftProductMoney + "之间");
+            return;
+        }
+        $.post("/005-money-web/loan/page/invest", {"bidMoney": bidMoney, "loanId": loanId}, function (data) {
+            if(data.code===0){
+                alert(data.message);
+                return;
+            }
+            if(data.code===1){
+                showMoney();
+                $("#failurePayment").show();
+                $("#dialog-overlay1").show();
+            }
+        });
+    }
+
+    }
+</script>
+</body>
+</html>
